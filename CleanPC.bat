@@ -2,38 +2,55 @@
 setlocal enabledelayedexpansion
 
 :: === Auto-update configuration ===
-set "current_version=1.0.0"
-set "version_url=https://raw.githubusercontent.com/YourUsername/YourRepo/main/version.txt"
-set "script_url=https://raw.githubusercontent.com/YourUsername/YourRepo/main/BlackBullCleaner.bat"
+set "current_version=0.0.0.1"
+set "version_url=https://raw.githubusercontent.com/BlackBullNetwork/Cleaner-Script/main/latest_version.txt"
+set "script_url=https://raw.githubusercontent.com/BlackBullNetwork/Cleaner-Script/main/CleanPC.bat"
+set "curl_path=%SystemRoot%\System32\curl.exe"
 
 echo Checking for updates...
 
 :: Download latest version number
-curl -s -o "%temp%\latest_version.txt" "%version_url%"
-
+"%curl_path%" -s -o "%temp%\latest_version.txt" "%version_url%"
+if errorlevel 1 (
+    echo Failed to download version info.
+    goto mainmenu
+)
 if not exist "%temp%\latest_version.txt" (
-    echo Failed to check updates.
-    goto :mainmenu
+    echo Version info file missing.
+    goto mainmenu
 )
 
+:: Read latest version into variable
 set /p latest_version=<"%temp%\latest_version.txt"
+:: Trim trailing spaces just in case
+for /f "tokens=* delims= " %%a in ("!latest_version!") do set "latest_version=%%a"
 
-echo Current version: %current_version%
+echo Current version: !current_version!
 echo Latest version:  !latest_version!
 
-if "!latest_version!"=="%current_version%" (
+if "!latest_version!"=="!current_version!" (
     echo You are already running the latest version.
-    goto :mainmenu
+    goto mainmenu
 ) else (
-    echo New version available! Updating...
-    curl -s -o "%temp%\BlackBullCleaner_new.bat" "%script_url%"
+    echo New version available! Downloading update...
+    "%curl_path%" -s -o "%temp%\BlackBullCleaner_new.bat" "%script_url%"
+    if errorlevel 1 (
+        echo Failed to download updated script.
+        goto mainmenu
+    )
     if exist "%temp%\BlackBullCleaner_new.bat" (
-        move /Y "%temp%\BlackBullCleaner_new.bat" "%~f0"
-        echo Updated successfully! Please restart the script.
+        echo Update downloaded.
+        echo Copying new script over current script...
+        copy /Y "%temp%\BlackBullCleaner_new.bat" "%~f0" >nul
+        if errorlevel 1 (
+            echo Failed to update script file. Close any open editors or permissions may be blocking it.
+            goto mainmenu
+        )
+        echo Update successful! Please restart the script now.
         exit /b
     ) else (
-        echo Failed to download the update.
-        goto :mainmenu
+        echo Update file not found after download.
+        goto mainmenu
     )
 )
 
@@ -44,7 +61,7 @@ color 0A
 
 :MENU
 cls
-echo ================================
+echo ======================= V0.0.0.1
 echo     BlackBull Clean-Up Menu
 echo ================================
 echo [1] Run MRT (Malware Scan)
