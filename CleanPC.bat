@@ -2,7 +2,7 @@
 setlocal enabledelayedexpansion
 
 :: === Auto-update configuration ===
-set "current_version=1.0.0.6"
+set "current_version=1.0.0.7"
 set "version_url=https://raw.githubusercontent.com/BlackBullNetwork/Cleaner-Script/refs/heads/main/latest_version.txt"
 set "script_url=https://raw.githubusercontent.com/BlackBullNetwork/Cleaner-Script/refs/heads/main/CleanPC.bat"
 set "curl_path=%SystemRoot%\System32\curl.exe"
@@ -314,6 +314,4 @@ goto FPSRESET
 :DISKCLEANUP
 echo Running Disk Cleanup with predefined settings...
 %SystemRoot%\System32\cleanmgr.exe /sagerun:1
-echo Disk Cleanup complete or cancelled.
-pause
 goto MENU
