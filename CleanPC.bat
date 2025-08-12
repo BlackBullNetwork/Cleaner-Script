@@ -61,7 +61,7 @@ color 0A
 
 :MENU
 cls
-echo ======================= V0.0.0.1
+echo ======================= V!current_version!
 echo     BlackBull Clean-Up Menu
 echo ================================
 echo [1] Run MRT (Malware Scan)
