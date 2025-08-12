@@ -1,23 +1,8 @@
 @echo off
 setlocal enabledelayedexpansion
 
-:: === Admin check - avoid infinite loop ===
-:: Use 'openfiles' command to test admin privileges (requires admin)
-openfiles >nul 2>&1
-if %errorlevel% neq 0 (
-    if "%1" neq "elevated" (
-        echo Requesting administrative privileges...
-        powershell -Command "Start-Process -FilePath '%~f0' -ArgumentList 'elevated' -Verb runAs"
-        exit /b
-    ) else (
-        echo Failed to obtain administrative privileges.
-        pause
-        exit /b
-    )
-)
-
 :: === Auto-update configuration ===
-set "current_version=1.0.0.5"
+set "current_version=1.0.0.6"
 set "version_url=https://raw.githubusercontent.com/BlackBullNetwork/Cleaner-Script/refs/heads/main/latest_version.txt"
 set "script_url=https://raw.githubusercontent.com/BlackBullNetwork/Cleaner-Script/refs/heads/main/CleanPC.bat"
 set "curl_path=%SystemRoot%\System32\curl.exe"
@@ -62,7 +47,7 @@ if "!latest_version!"=="!current_version!" (
         )
         echo Update successful! Restarting script now...
         timeout /t 2 /nobreak >nul
-        start "" "%~f0" elevated
+        start "" "%~f0"
         exit /b
     ) else (
         echo Update file not found after download.
@@ -90,6 +75,7 @@ echo [7] Run SFC (System File Checker)
 echo [8] Run DISM (Fix Corrupted System)
 echo [9] Improve FPS / Gaming Mode
 echo [10] Exit
+echo [11] Run Disk Cleanup
 echo.
 set /p choice=Choose wisely: 
 
@@ -103,6 +89,7 @@ if "%choice%"=="7" goto SFC
 if "%choice%"=="8" goto DISM
 if "%choice%"=="9" goto FPSBOOST
 if "%choice%"=="10" exit
+if "%choice%"=="11" goto DISKCLEANUP
 goto MENU
 
 :MRT
@@ -176,7 +163,7 @@ echo [7] Clean GPU Cache ^& Temp Files (NVIDIA)
 echo [8] Clear Clipboard
 echo [9] Disable Windows Tips
 echo [10] Adjust Visual Effects for Best Performance
-echo [11] Reset all FPS Boost settings
+echo [11] Reset all FPS Boost Tweaks
 echo [12] Back to Main Menu
 echo.
 set /p fpschoice=Choose an option: 
@@ -318,56 +305,15 @@ pause
 goto FPSBOOST
 
 :FPSRESETALL
-echo Resetting ALL FPS Boost tweaks to original settings...
-:: Re-enable services
-%SystemRoot%\System32\sc.exe config "SysMain" start= auto
-%SystemRoot%\System32\sc.exe start "SysMain"
-%SystemRoot%\System32\sc.exe config "DiagTrack" start= auto
-%SystemRoot%\System32\sc.exe start "DiagTrack"
-%SystemRoot%\System32\sc.exe config "WSearch" start= delayed-auto
-%SystemRoot%\System32\sc.exe start "WSearch"
-%SystemRoot%\System32\sc.exe config "Fax" start= demand
+echo Resetting all FPS Boost tweaks to original settings...
 
-:: Re-enable transparency effects & animations
-reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize" /v EnableTransparency /t REG_DWORD /d 1 /f
+:: Call the same commands as FPSRESET to revert services and registry tweaks
+goto FPSRESET
 
-:: Re-enable Windows Game Mode
-reg add "HKCU\Software\Microsoft\GameBar" /v AllowAutoGameMode /t REG_DWORD /d 1 /f
-
-:: Remove Edge restrictions
-reg delete "HKCU\Software\Policies\Microsoft\MicrosoftEdge" /f
-reg delete "HKLM\SOFTWARE\Policies\Microsoft\Edge" /f
-
-:: Enable Windows Notifications
-reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Notifications\Settings" /v NOC_GLOBAL_SETTING_TOASTS_ENABLED /t REG_DWORD /d 1 /f
-
-:: Set Balanced Power Plan (default)
-powercfg /setactive SCHEME_BALANCED
-
-:: Re-enable Xbox Game Bar and DVR
-reg add "HKCU\Software\Microsoft\GameBar" /v AllowAutoGameMode /t REG_DWORD /d 1 /f
-reg add "HKCU\Software\Microsoft\GameBar" /v GameDVR_Enabled /t REG_DWORD /d 1 /f
-reg add "HKCU\Software\Microsoft\GameBar" /v GameDVR_FSEBehaviorMode /t REG_DWORD /d 1 /f
-
-%SystemRoot%\System32\sc.exe config "XblGameSave" start= auto
-%SystemRoot%\System32\sc.exe start "XblGameSave"
-%SystemRoot%\System32\sc.exe config "XboxGipSvc" start= auto
-%SystemRoot%\System32\sc.exe start "XboxGipSvc"
-
-:: Reset Network not included here (optional)
-
-:: No GPU cache clearing here
-
-:: Clear Clipboard (optional)
-echo off | clip
-
-:: Enable Windows Tips
-reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" /v SystemPaneSuggestionsEnabled /t REG_DWORD /d 1 /f
-
-:: Reset Visual Effects to default (let's set VisualFXSetting to 1 - Let Windows decide)
-reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\VisualEffects" /v VisualFXSetting /t REG_DWORD /d 1 /f
-reg delete "HKCU\Control Panel\Desktop\WindowMetrics" /v MinAnimate /f >nul 2>&1
-
-echo All FPS Boost settings have been reset to default.
+:: DISKCLEANUP option
+:DISKCLEANUP
+echo Running Disk Cleanup with predefined settings...
+%SystemRoot%\System32\cleanmgr.exe /sagerun:1
+echo Disk Cleanup complete or cancelled.
 pause
-goto FPSBOOST
+goto MENU
