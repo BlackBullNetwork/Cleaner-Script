@@ -2,7 +2,7 @@
 setlocal enabledelayedexpansion
 
 :: === Auto-update configuration ===
-set "current_version=1.0.0.8"
+set "current_version=1.0.0.0"
 set "version_url=https://raw.githubusercontent.com/BlackBullNetwork/Cleaner-Script/refs/heads/main/latest_version.txt"
 set "script_url=https://raw.githubusercontent.com/BlackBullNetwork/Cleaner-Script/refs/heads/main/CleanPC.bat"
 set "curl_path=%SystemRoot%\System32\curl.exe"
@@ -76,7 +76,7 @@ echo [7] Run SFC (System File Checker)
 echo [8] Run DISM (Fix Corrupted System)
 echo [9] Improve FPS / Gaming Mode
 echo [10] Run Disk Cleanup
-echo [1] Exit
+echo [11] Exit
 echo.
 set /p choice=Choose wisely: 
 
