@@ -1,8 +1,16 @@
 @echo off
+:: Check for admin rights
+openfiles >nul 2>&1
+if %errorlevel% neq 0 (
+    echo Requesting administrative privileges...
+    powershell -Command "Start-Process -FilePath '%~f0' -Verb runAs"
+    exit /b
+)
+
 setlocal enabledelayedexpansion
 
 :: === Auto-update configuration ===
-set "current_version=1.0.0.3"
+set "current_version=1.0.0.5"
 set "version_url=https://raw.githubusercontent.com/BlackBullNetwork/Cleaner-Script/refs/heads/main/latest_version.txt"
 set "script_url=https://raw.githubusercontent.com/BlackBullNetwork/Cleaner-Script/refs/heads/main/CleanPC.bat"
 set "curl_path=%SystemRoot%\System32\curl.exe"
