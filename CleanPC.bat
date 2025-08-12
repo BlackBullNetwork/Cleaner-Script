@@ -72,8 +72,8 @@ echo [5] Flush DNS Cache
 echo [6] Clean Windows Update Cache
 echo [7] Run SFC (System File Checker)
 echo [8] Run DISM (Fix Corrupted System)
-echo [9] Exit
-echo [10] Improve FPS / Gaming Mode
+echo [9] Improve FPS / Gaming Mode
+echo [10] Exit
 echo.
 set /p choice=Choose wisely: 
 
