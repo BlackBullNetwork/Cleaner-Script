@@ -2,7 +2,7 @@
 setlocal enabledelayedexpansion
 
 :: === Auto-update configuration ===
-set "current_version=1.0.0.0"
+set "current_version=1.0.0.2"
 set "version_url=https://raw.githubusercontent.com/BlackBullNetwork/Cleaner-Script/main/latest_version.txt"
 set "script_url=https://raw.githubusercontent.com/BlackBullNetwork/Cleaner-Script/main/CleanPC.bat"
 set "curl_path=%SystemRoot%\System32\curl.exe"
@@ -86,8 +86,8 @@ if "%choice%"=="5" goto FLUSHDNS
 if "%choice%"=="6" goto CLEANWUCACHE
 if "%choice%"=="7" goto SFC
 if "%choice%"=="8" goto DISM
-if "%choice%"=="9" exit
-if "%choice%"=="10" goto FPSBOOST
+if "%choice%"=="9" goto FPSBOOST
+if "%choice%"=="10" exit
 goto MENU
 
 :MRT
@@ -155,9 +155,9 @@ echo [1] Install FPS Boost
 echo [2] Reset FPS Boost
 echo [3] Disable Windows Notifications / Focus Assist
 echo [4] Set High Performance Power Plan
-echo [5] Disable Xbox Game Bar & DVR
+echo [5] Disable Xbox Game Bar ^& DVR
 echo [6] Reset Network (Release/Renew, Winsock reset)
-echo [7] Clean GPU Cache & Temp Files (NVIDIA)
+echo [7] Clean GPU Cache ^& Temp Files (NVIDIA)
 echo [8] Clear Clipboard
 echo [9] Disable Windows Tips
 echo [10] Adjust Visual Effects for Best Performance
