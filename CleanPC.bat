@@ -2,7 +2,7 @@
 setlocal enabledelayedexpansion
 
 :: === Auto-update configuration ===
-set "current_version=1.0.0.7"
+set "current_version=1.0.0.8"
 set "version_url=https://raw.githubusercontent.com/BlackBullNetwork/Cleaner-Script/refs/heads/main/latest_version.txt"
 set "script_url=https://raw.githubusercontent.com/BlackBullNetwork/Cleaner-Script/refs/heads/main/CleanPC.bat"
 set "curl_path=%SystemRoot%\System32\curl.exe"
@@ -74,8 +74,8 @@ echo [6] Clean Windows Update Cache
 echo [7] Run SFC (System File Checker)
 echo [8] Run DISM (Fix Corrupted System)
 echo [9] Improve FPS / Gaming Mode
-echo [10] Exit
-echo [11] Run Disk Cleanup
+echo [10] Run Disk Cleanup
+echo [1] Exit
 echo.
 set /p choice=Choose wisely: 
 
@@ -88,8 +88,8 @@ if "%choice%"=="6" goto CLEANWUCACHE
 if "%choice%"=="7" goto SFC
 if "%choice%"=="8" goto DISM
 if "%choice%"=="9" goto FPSBOOST
-if "%choice%"=="10" exit
-if "%choice%"=="11" goto DISKCLEANUP
+if "%choice%"=="10" goto DISKCLEANUP
+if "%choice%"=="11" exit
 goto MENU
 
 :MRT
