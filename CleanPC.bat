@@ -22,7 +22,6 @@ if not exist "%temp%\latest_version.txt" (
 
 :: Read latest version into variable
 set /p latest_version=<"%temp%\latest_version.txt"
-:: Trim trailing spaces just in case
 for /f "tokens=* delims= " %%a in ("!latest_version!") do set "latest_version=%%a"
 
 echo Current version: !current_version!
@@ -46,7 +45,9 @@ if "!latest_version!"=="!current_version!" (
             echo Failed to update script file. Close any open editors or permissions may be blocking it.
             goto mainmenu
         )
-        echo Update successful! Please restart the script now.
+        echo Update successful! Restarting script now...
+        timeout /t 2 /nobreak >nul
+        start "" "%~f0"
         exit /b
     ) else (
         echo Update file not found after download.
