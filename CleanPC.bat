@@ -57,7 +57,7 @@ if "!latest_version!"=="!current_version!" (
 
 :mainmenu
 cls
-title BlackBull PC Cleaner 💻✨
+title BlackBull PC Cleaner
 color 0A
 
 :MENU
