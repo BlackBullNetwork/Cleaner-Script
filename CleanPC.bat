@@ -65,6 +65,7 @@ cls
 echo ======================= V!current_version!
 echo     BlackBull Clean-Up Menu
 echo ================================
+echo [0] Check for updates
 echo [1] Run MRT (Malware Scan)
 echo [2] Update all programs
 echo [3] Clear Temp Files
@@ -79,6 +80,7 @@ echo [1] Exit
 echo.
 set /p choice=Choose wisely: 
 
+if "%choice%"=="0" call :CHECKUPDATE & goto MENU
 if "%choice%"=="1" goto MRT
 if "%choice%"=="2" goto WINGET
 if "%choice%"=="3" goto CLEARTEMP
@@ -91,6 +93,63 @@ if "%choice%"=="9" goto FPSBOOST
 if "%choice%"=="10" goto DISKCLEANUP
 if "%choice%"=="11" exit
 goto MENU
+
+:: === Update check routine ===
+:CHECKUPDATE
+echo Checking for updates...
+
+:: Download latest version number
+"%curl_path%" -s -o "%temp%\latest_version.txt" "%version_url%"
+if errorlevel 1 (
+    echo Failed to download version info.
+    pause
+    goto :eof
+)
+if not exist "%temp%\latest_version.txt" (
+    echo Version info file missing.
+    pause
+    goto :eof
+)
+
+:: Read latest version into variable
+set /p latest_version=<"%temp%\latest_version.txt"
+for /f "tokens=* delims= " %%a in ("!latest_version!") do set "latest_version=%%a"
+
+echo Current version: !current_version!
+echo Latest version:  !latest_version!
+
+if "!latest_version!"=="!current_version!" (
+    echo You are already running the latest version.
+    pause
+    goto :eof
+) else (
+    echo New version available! Downloading update...
+    "%curl_path%" -s -o "%temp%\BlackBullCleaner_new.bat" "%script_url%"
+    if errorlevel 1 (
+        echo Failed to download updated script.
+        pause
+        goto :eof
+    )
+    if exist "%temp%\BlackBullCleaner_new.bat" (
+        echo Update downloaded.
+        echo Copying new script over current script...
+        copy /Y "%temp%\BlackBullCleaner_new.bat" "%~f0" >nul
+        if errorlevel 1 (
+            echo Failed to update script file. Close any open editors or permissions may be blocking it.
+            pause
+            goto :eof
+        )
+        echo Update successful! Restarting script now...
+        timeout /t 3 /nobreak >nul
+        start "" "%~f0"
+        exit /b
+    ) else (
+        echo Update file not found after download.
+        pause
+        goto :eof
+    )
+)
+goto :eof
 
 :MRT
 echo Running MRT...
