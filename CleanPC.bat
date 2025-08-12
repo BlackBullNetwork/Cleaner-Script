@@ -2,7 +2,7 @@
 setlocal enabledelayedexpansion
 
 :: === Auto-update configuration ===
-set "current_version=1.0.0.2"
+set "current_version=1.0.0.3"
 set "version_url=https://raw.githubusercontent.com/BlackBullNetwork/Cleaner-Script/refs/heads/main/latest_version.txt"
 set "script_url=https://raw.githubusercontent.com/BlackBullNetwork/Cleaner-Script/refs/heads/main/CleanPC.bat"
 set "curl_path=%SystemRoot%\System32\curl.exe"
@@ -161,7 +161,8 @@ echo [7] Clean GPU Cache ^& Temp Files (NVIDIA)
 echo [8] Clear Clipboard
 echo [9] Disable Windows Tips
 echo [10] Adjust Visual Effects for Best Performance
-echo [11] Back to Main Menu
+echo [11] Reset All FPS Boost Tweaks (Full Reset)
+echo [12] Back to Main Menu
 echo.
 set /p fpschoice=Choose an option: 
 
@@ -175,7 +176,8 @@ if "%fpschoice%"=="7" goto CLEANGPUCACHE
 if "%fpschoice%"=="8" goto CLEARCLIPBOARD
 if "%fpschoice%"=="9" goto DISABLETIPS
 if "%fpschoice%"=="10" goto VISUALEFFECTS
-if "%fpschoice%"=="11" goto MENU
+if "%fpschoice%"=="11" goto FPSFULLRESET
+if "%fpschoice%"=="12" goto MENU
 goto FPSBOOST
 
 :FPSINSTALL
@@ -297,5 +299,48 @@ echo Adjusting Visual Effects for best performance...
 reg add "HKCU\Control Panel\Desktop\WindowMetrics" /v MinAnimate /t REG_SZ /d 0 /f
 reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\VisualEffects" /v VisualFXSetting /t REG_DWORD /d 2 /f
 echo Visual effects adjusted.
+pause
+goto FPSBOOST
+
+:FPSFULLRESET
+echo Performing full reset of all FPS Boost tweaks...
+
+:: Revert FPS Boost tweaks (same as FPSRESET)
+%SystemRoot%\System32\sc.exe config "SysMain" start= auto
+%SystemRoot%\System32\sc.exe start "SysMain"
+%SystemRoot%\System32\sc.exe config "DiagTrack" start= auto
+%SystemRoot%\System32\sc.exe start "DiagTrack"
+%SystemRoot%\System32\sc.exe config "WSearch" start= delayed-auto
+%SystemRoot%\System32\sc.exe start "WSearch"
+%SystemRoot%\System32\sc.exe config "Fax" start= demand
+
+reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize" /v EnableTransparency /t REG_DWORD /d 1 /f
+
+reg add "HKCU\Software\Microsoft\GameBar" /v AllowAutoGameMode /t REG_DWORD /d 1 /f
+
+reg delete "HKCU\Software\Policies\Microsoft\MicrosoftEdge" /f
+reg delete "HKLM\SOFTWARE\Policies\Microsoft\Edge" /f
+
+:: Re-enable Windows Notifications / Focus Assist
+reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Notifications\Settings" /v NOC_GLOBAL_SETTING_TOASTS_ENABLED /t REG_DWORD /d 1 /f
+
+:: Reset power plan to Balanced (default)
+powercfg /setactive SCHEME_BALANCED
+
+:: Re-enable Xbox Game Bar and DVR
+reg add "HKCU\Software\Microsoft\GameBar" /v AllowAutoGameMode /t REG_DWORD /d 1 /f
+reg add "HKCU\Software\Microsoft\GameBar" /v GameDVR_Enabled /t REG_DWORD /d 1 /f
+reg add "HKCU\Software\Microsoft\GameBar" /v GameDVR_FSEBehaviorMode /t REG_DWORD /d 1 /f
+
+%SystemRoot%\System32\sc.exe config "XblGameSave" start= auto
+%SystemRoot%\System32\sc.exe start "XblGameSave"
+%SystemRoot%\System32\sc.exe config "XboxGipSvc" start= auto
+%SystemRoot%\System32\sc.exe start "XboxGipSvc"
+
+:: Reset Visual Effects to default (let Windows choose)
+reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\VisualEffects" /v VisualFXSetting /t REG_DWORD /d 1 /f
+reg add "HKCU\Control Panel\Desktop\WindowMetrics" /v MinAnimate /t REG_SZ /d 1 /f
+
+echo Full FPS Boost reset complete! A restart is recommended.
 pause
 goto FPSBOOST
