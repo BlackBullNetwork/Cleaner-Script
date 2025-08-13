@@ -140,4 +140,5 @@ If you prefer updates to be manual, remove or comment the auto-update section at
 ---
 
 ## License
-Add your preferred license here (e.g., MIT). Example:
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
