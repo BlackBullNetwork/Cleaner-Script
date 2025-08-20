@@ -2,7 +2,7 @@
 setlocal enabledelayedexpansion
 
 :: === Auto-update configuration ===
-set "current_version=1.0.0.8"
+set "current_version=1.0.0.9"
 set "version_url=https://raw.githubusercontent.com/BlackBullNetwork/Cleaner-Script/refs/heads/main/latest_version.txt"
 set "script_url=https://raw.githubusercontent.com/BlackBullNetwork/Cleaner-Script/refs/heads/main/CleanPC.bat"
 set "curl_path=%SystemRoot%\System32\curl.exe"
@@ -76,7 +76,8 @@ echo [7] Run SFC (System File Checker)
 echo [8] Run DISM (Fix Corrupted System)
 echo [9] Improve FPS / Gaming Mode
 echo [10] Run Disk Cleanup
-echo [11] Exit
+echo [11] Spotify options
+echo [12] Exit
 echo.
 set /p choice=Choose wisely: 
 
@@ -91,7 +92,8 @@ if "%choice%"=="7" goto SFC
 if "%choice%"=="8" goto DISM
 if "%choice%"=="9" goto FPSBOOST
 if "%choice%"=="10" goto DISKCLEANUP
-if "%choice%"=="11" exit
+if "%choice%"=="11" goto Spotify
+if "%choice%"=="12" exit
 goto MENU
 
 :: === Update check routine ===
@@ -374,3 +376,71 @@ goto FPSRESET
 echo Running Disk Cleanup with predefined settings...
 %SystemRoot%\System32\cleanmgr.exe /sagerun:1
 goto MENU
+
+
+:Spotify
+cls
+echo ================================
+echo        Spotify Options
+echo    Listen without any ads!
+echo ================================
+echo [1] Install Spotify adblocker
+echo [2] Uninstall Spotify adblocker
+echo [3] Back to Main Menu
+echo.
+set /p spotifychoice=Choose an option: 
+
+if "%spotifychoice%"=="1" goto SPOTIFY_INSTALL
+if "%spotifychoice%"=="2" goto SPOTIFY_UNINSTALL
+if "%spotifychoice%"=="3" goto MENU
+goto Spotify
+
+:SPOTIFY_INSTALL
+cls
+echo Installing Spotify...
+%SYSTEMROOT%\System32\WindowsPowerShell\v1.0\powershell.exe -Command "&{[Net.ServicePointManager]::SecurityProtocol = 3072}; """"& { $(Invoke-WebRequest -UseBasicParsing 'https://spotx-official.github.io/run.ps1')} -new_theme """" | Invoke-Expression"
+
+pause
+goto Spotify
+
+
+:SPOTIFY_UNINSTALL
+cls
+echo Uninstalling Spotify...
+SETLOCAL ENABLEDELAYEDEXPANSION
+
+if exist "%Appdata%\Spotify\dpapi.dll" ( 
+    del /s /q "%Appdata%\Spotify\dpapi.dll" > NUL 2>&1
+) 
+
+if exist "%Appdata%\Spotify\Spotify.bak" ( 
+    del /s /q "%Appdata%\Spotify.exe" > NUL 2>&1
+    move "%Appdata%\Spotify\Spotify.bak" "%Appdata%\Spotify\Spotify.exe" > NUL 2>&1
+)
+
+
+if exist "%Appdata%\Spotify\config.ini" (
+    del /s /q "%Appdata%\Spotify\config.ini" > NUL 2>&1
+) 
+
+
+if exist "%Appdata%\Spotify\Apps\xpui.bak" (
+    del /s /q "%Appdata%\Spotify\Apps\xpui.spa" > NUL 2>&1
+    move "%Appdata%\Spotify\Apps\xpui.bak" "%Appdata%\Spotify\Apps\xpui.spa" > NUL 2>&1
+) 
+
+
+if exist "%Appdata%\Spotify\blockthespot_log.txt" (
+    del /s /q "%Appdata%\Spotify\blockthespot_log.txt" > NUL 2>&1
+)
+
+if exist "%temp%\SpotX_Temp*" (
+    for /d %%i in ("%temp%\SpotX_Temp*") do (
+        rd /s/q "%%i" > NUL 2>&1
+    )
+)
+
+echo Successfully removed.
+
+pause
+goto Spotify
